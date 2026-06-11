@@ -1,11 +1,12 @@
-// Login.jsx - Enhanced with better visual design and animations
+// Login.jsx - Matte white modern finish with pre-filled credentials
 import { useState } from "react";
 import axios from "axios";
-import { Shield, Smartphone, Key, Lock, Fingerprint, Sparkles } from "lucide-react";
+import { Shield, Smartphone, Key, Lock, Sparkles } from "lucide-react";
 
 export default function Login({ onSuccess }) {
-  const [mobile, setMobile] = useState("");
-  const [ucc, setUcc] = useState("");
+  // Default credentials
+  const [mobile, setMobile] = useState("+918086515301");
+  const [ucc, setUcc] = useState("X9YOZ");
   const [totp, setTotp] = useState("");
   const [mpin, setMpin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,31 +35,31 @@ export default function Login({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo and Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-2xl mb-5 animate-bounce-slow">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-2xl shadow-md mb-5">
             <Shield className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Trading Terminal</h1>
-          <p className="text-gray-400 text-sm">Kotak Neo Trading Platform</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 tracking-tight">Trading Terminal</h1>
+          <p className="text-gray-500 text-sm">Kotak Neo Trading Platform</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/20">
-          <div className="flex border-b border-white/20">
-            <div className={`flex-1 py-3.5 text-center text-sm font-semibold transition-all ${
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="flex border-b border-gray-200">
+            <div className={`flex-1 py-3.5 text-center text-sm font-semibold ${
               step === 1 
                 ? 'bg-blue-600 text-white' 
-                : 'text-gray-300'
+                : 'bg-gray-100 text-gray-600'
             }`}>
               Step 1: Credentials
             </div>
-            <div className={`flex-1 py-3.5 text-center text-sm font-semibold transition-all ${
+            <div className={`flex-1 py-3.5 text-center text-sm font-semibold ${
               step === 2 
                 ? 'bg-blue-600 text-white' 
-                : 'text-gray-300'
+                : 'bg-gray-100 text-gray-600'
             }`}>
               Step 2: Verification
             </div>
@@ -68,15 +69,15 @@ export default function Login({ onSuccess }) {
             {step === 1 ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Mobile Number
                   </label>
                   <div className="relative">
                     <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="tel"
-                      placeholder="Enter 10-digit mobile number"
-                      className="w-full pl-10 pr-3 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      placeholder="Enter mobile number"
+                      className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-400"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
                     />
@@ -84,26 +85,26 @@ export default function Login({ onSuccess }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     UCC (Client ID)
                   </label>
                   <input
                     placeholder="Enter your UCC"
-                    className="w-full px-3 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-400"
                     value={ucc}
                     onChange={(e) => setUcc(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     TOTP (Time-based OTP)
                   </label>
                   <div className="relative">
                     <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       placeholder="Enter 6-digit TOTP"
-                      className="w-full pl-10 pr-3 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-400"
                       value={totp}
                       onChange={(e) => setTotp(e.target.value)}
                     />
@@ -112,17 +113,17 @@ export default function Login({ onSuccess }) {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-blue-500/20 backdrop-blur-sm p-4 rounded-lg border border-blue-500/30 mb-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
                   <div className="flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4 text-blue-300" />
-                    <p className="text-sm text-blue-200">
+                    <Sparkles className="w-4 h-4 text-blue-600" />
+                    <p className="text-sm text-blue-700">
                       Please enter your MPIN to complete the login process.
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     MPIN
                   </label>
                   <div className="relative">
@@ -130,7 +131,7 @@ export default function Login({ onSuccess }) {
                     <input
                       type="password"
                       placeholder="Enter your MPIN"
-                      className="w-full pl-10 pr-3 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-400"
                       value={mpin}
                       onChange={(e) => setMpin(e.target.value)}
                       maxLength={6}
@@ -144,10 +145,10 @@ export default function Login({ onSuccess }) {
               <button
                 onClick={login}
                 disabled={isLoading}
-                className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-bold transition-all ${
+                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-bold transition-all ${
                   isLoading 
                     ? 'opacity-70 cursor-not-allowed' 
-                    : 'hover:from-blue-700 hover:to-blue-800 hover:shadow-lg transform hover:scale-[1.02]'
+                    : 'hover:bg-blue-700 shadow-sm'
                 }`}
               >
                 {isLoading ? (
@@ -164,7 +165,7 @@ export default function Login({ onSuccess }) {
               {step === 2 && (
                 <button
                   onClick={() => setStep(1)}
-                  className="w-full border border-white/30 text-gray-200 py-3 rounded-lg font-medium hover:bg-white/10 transition-all"
+                  className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-all"
                 >
                   Back
                 </button>
@@ -172,7 +173,7 @@ export default function Login({ onSuccess }) {
             </div>
 
             <div className="mt-4 text-center">
-              <p className="text-xs text-gray-400 flex items-center justify-center space-x-1">
+              <p className="text-xs text-gray-500 flex items-center justify-center space-x-1">
                 <Shield className="w-3 h-3" />
                 <span>Your credentials are securely encrypted</span>
               </p>
@@ -180,7 +181,7 @@ export default function Login({ onSuccess }) {
           </div>
         </div>
 
-        <p className="text-center mt-6 text-xs text-gray-500">
+        <p className="text-center mt-6 text-xs text-gray-400">
           © 2024 Trading Terminal. All rights reserved.
         </p>
       </div>
