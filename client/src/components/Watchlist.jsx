@@ -58,8 +58,8 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
   const isConnected = Object.keys(ltpData).length > 0;
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e]">
-      <div className="p-3 border-b border-[#2a2a3e]">
+    <div className="h-full flex flex-col bg-[#13151A]">
+      <div className="p-3 border-b border-[#2C2F36]">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Watchlist</h2>
           <div className="flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
             <p className="text-xs text-gray-500">Add symbols to watchlist</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#2a2a3e]">
+          <div className="divide-y divide-[#2C2F36]">
             {list.map((item) => {
               const isSelected = selectedSymbol?.symbol === item.symbol;
               const isFavorite = favorites.includes(item.symbol);
@@ -96,7 +96,13 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
               const price = ltpItem?.price;
               const { change, changePercent, isPositive, isNegative } = getPriceChange(item.symbol);
               return (
-                <div key={item.symbol} onClick={() => handleSelect(item)} className={`group relative px-3 py-2 cursor-pointer transition-colors ${isSelected ? 'bg-[#0f3460] border-l-4 border-[#e94560]' : 'border-l-4 border-transparent hover:bg-[#252540]'}`}>
+                <div
+                  key={item.symbol}
+                  onClick={() => handleSelect(item)}
+                  className={`group relative px-3 py-2 cursor-pointer transition-colors ${
+                    isSelected ? 'bg-[#1E293B] border-l-4 border-[#3B82F6]' : 'border-l-4 border-transparent hover:bg-[#1A1C23]'
+                  }`}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -104,7 +110,12 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
                           <Star className={`w-3.5 h-3.5 ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`} />
                         </button>
                         <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-200'}`}>{item.symbol}</span>
-                        {ltpItem && <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>}
+                        {ltpItem && (
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D09C] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00D09C]"></span>
+                          </span>
+                        )}
                       </div>
                       {item.name && <div className="text-[9px] text-gray-500 truncate ml-5">{item.name}</div>}
                     </div>
@@ -114,8 +125,8 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
                       </div>
                       {price && (
                         <div className="flex items-center justify-end gap-1 mt-0.5">
-                          {isPositive ? <TrendingUp className="w-3 h-3 text-emerald-400" /> : isNegative ? <TrendingDown className="w-3 h-3 text-rose-400" /> : <Minus className="w-3 h-3 text-gray-500" />}
-                          <span className={`text-[9px] font-medium tabular-nums ${isPositive ? 'text-emerald-400' : isNegative ? 'text-rose-400' : 'text-gray-500'}`}>
+                          {isPositive ? <TrendingUp className="w-3 h-3 text-[#00D09C]" /> : isNegative ? <TrendingDown className="w-3 h-3 text-[#FF4D4D]" /> : <Minus className="w-3 h-3 text-gray-500" />}
+                          <span className={`text-[9px] font-medium tabular-nums ${isPositive ? 'text-[#00D09C]' : isNegative ? 'text-[#FF4D4D]' : 'text-gray-500'}`}>
                             {changePercent > 0 ? '+' : ''}{changePercent}%
                           </span>
                         </div>
@@ -124,7 +135,9 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
                   </div>
                   <div className="flex items-center justify-between mt-1 ml-5">
                     <span className="text-[8px] text-gray-500 uppercase">{item.exch || 'NSE'}</span>
-                    <button onClick={(e) => removeFromWatchlist(e, item)} className="opacity-0 group-hover:opacity-100 text-[8px] text-rose-400 hover:text-rose-300">Remove</button>
+                    <button onClick={(e) => removeFromWatchlist(e, item)} className="opacity-0 group-hover:opacity-100 text-[8px] text-[#FF4D4D] hover:text-[#FF6B6B]">
+                      Remove
+                    </button>
                   </div>
                 </div>
               );
@@ -133,8 +146,8 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
         )}
       </div>
       {list.length > 0 && (
-        <div className="p-2 border-t border-[#2a2a3e] text-center">
-          <button onClick={() => setList([])} className="text-[9px] text-gray-500 hover:text-rose-400">Clear all</button>
+        <div className="p-2 border-t border-[#2C2F36] text-center">
+          <button onClick={() => setList([])} className="text-[9px] text-gray-500 hover:text-[#FF4D4D]">Clear all</button>
         </div>
       )}
     </div>
