@@ -58,15 +58,15 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
   const isConnected = Object.keys(ltpData).length > 0;
 
   return (
-    <div className="h-full flex flex-col bg-[#13151A]">
-      <div className="p-3 border-b border-[#2C2F36]">
+    <div className="h-full flex flex-col bg-white">
+      <div className="p-3 border-b border-gray-200">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Watchlist</h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Watchlist</h2>
           <div className="flex items-center gap-2">
             <div className={`live-pulse ${isConnected ? '' : 'opacity-30'}`} />
             <span className="text-[8px] text-gray-500">{isConnected ? 'LIVE' : 'OFFLINE'}</span>
             {onCloseMobile && (
-              <button onClick={onCloseMobile} className="lg:hidden text-gray-400 hover:text-white ml-2">
+              <button onClick={onCloseMobile} className="lg:hidden text-gray-400 hover:text-gray-600 ml-2">
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -84,11 +84,11 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
       <div className="flex-1 overflow-y-auto">
         {list.length === 0 ? (
           <div className="p-6 text-center">
-            <Activity className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-xs text-gray-500">Add symbols to watchlist</p>
+            <Activity className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-xs text-gray-400">Add symbols to watchlist</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#2C2F36]">
+          <div className="divide-y divide-gray-100">
             {list.map((item) => {
               const isSelected = selectedSymbol?.symbol === item.symbol;
               const isFavorite = favorites.includes(item.symbol);
@@ -100,33 +100,33 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
                   key={item.symbol}
                   onClick={() => handleSelect(item)}
                   className={`group relative px-3 py-2 cursor-pointer transition-colors ${
-                    isSelected ? 'bg-[#1E293B] border-l-4 border-[#3B82F6]' : 'border-l-4 border-transparent hover:bg-[#1A1C23]'
+                    isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent hover:bg-gray-50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <button onClick={(e) => toggleFavorite(e, item)} className="focus:outline-none">
-                          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`} />
+                          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
                         </button>
-                        <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-200'}`}>{item.symbol}</span>
+                        <span className={`text-sm font-medium ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>{item.symbol}</span>
                         {ltpItem && (
                           <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D09C] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00D09C]"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
                           </span>
                         )}
                       </div>
-                      {item.name && <div className="text-[9px] text-gray-500 truncate ml-5">{item.name}</div>}
+                      {item.name && <div className="text-[9px] text-gray-400 truncate ml-5">{item.name}</div>}
                     </div>
                     <div className="text-right ml-2">
-                      <div className={`text-sm font-semibold tabular-nums ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+                      <div className={`text-sm font-semibold tabular-nums ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>
                         {price ? `₹${typeof price === 'number' ? price.toFixed(2) : price}` : '---'}
                       </div>
                       {price && (
                         <div className="flex items-center justify-end gap-1 mt-0.5">
-                          {isPositive ? <TrendingUp className="w-3 h-3 text-[#00D09C]" /> : isNegative ? <TrendingDown className="w-3 h-3 text-[#FF4D4D]" /> : <Minus className="w-3 h-3 text-gray-500" />}
-                          <span className={`text-[9px] font-medium tabular-nums ${isPositive ? 'text-[#00D09C]' : isNegative ? 'text-[#FF4D4D]' : 'text-gray-500'}`}>
+                          {isPositive ? <TrendingUp className="w-3 h-3 text-green-500" /> : isNegative ? <TrendingDown className="w-3 h-3 text-red-500" /> : <Minus className="w-3 h-3 text-gray-400" />}
+                          <span className={`text-[9px] font-medium tabular-nums ${isPositive ? 'text-green-600' : isNegative ? 'text-red-600' : 'text-gray-400'}`}>
                             {changePercent > 0 ? '+' : ''}{changePercent}%
                           </span>
                         </div>
@@ -134,8 +134,8 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-1 ml-5">
-                    <span className="text-[8px] text-gray-500 uppercase">{item.exch || 'NSE'}</span>
-                    <button onClick={(e) => removeFromWatchlist(e, item)} className="opacity-0 group-hover:opacity-100 text-[8px] text-[#FF4D4D] hover:text-[#FF6B6B]">
+                    <span className="text-[8px] text-gray-400 uppercase">{item.exch || 'NSE'}</span>
+                    <button onClick={(e) => removeFromWatchlist(e, item)} className="opacity-0 group-hover:opacity-100 text-[8px] text-red-500 hover:text-red-600">
                       Remove
                     </button>
                   </div>
@@ -146,8 +146,8 @@ export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseM
         )}
       </div>
       {list.length > 0 && (
-        <div className="p-2 border-t border-[#2C2F36] text-center">
-          <button onClick={() => setList([])} className="text-[9px] text-gray-500 hover:text-[#FF4D4D]">Clear all</button>
+        <div className="p-2 border-t border-gray-100 text-center">
+          <button onClick={() => setList([])} className="text-[9px] text-gray-400 hover:text-red-500">Clear all</button>
         </div>
       )}
     </div>

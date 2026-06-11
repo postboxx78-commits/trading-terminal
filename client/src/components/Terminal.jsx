@@ -25,18 +25,18 @@ export default function Terminal() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#0E0E12]">
+    <div className="h-screen flex flex-col bg-[#F5F7FA]">
       <Header onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)} />
       
       {/* Mobile overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/60 z-20 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+        <div className="fixed inset-0 bg-black/20 z-20 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
       )}
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left Sidebar - Watchlist (mobile drawer) */}
         <div className={`
-          fixed lg:relative z-30 w-80 h-full bg-[#13151A] border-r border-[#2C2F36] transition-transform duration-300
+          fixed lg:relative z-30 w-80 h-full bg-white border-r border-gray-200 transition-transform duration-300 shadow-sm
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <Watchlist 
@@ -60,14 +60,14 @@ export default function Terminal() {
           </div>
 
           {/* Bottom Panel - Positions & Orders */}
-          <div className="flex-1 min-h-0 bg-[#13151A] rounded-xl border border-[#2C2F36] overflow-hidden">
-            <div className="flex space-x-1 p-1.5 border-b border-[#2C2F36] bg-[#111217]">
+          <div className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="flex space-x-1 p-1.5 border-b border-gray-200 bg-gray-50">
               <button
                 onClick={() => setActiveView("positions")}
                 className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   activeView === "positions"
-                    ? "bg-[#3B82F6] text-white"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-[#1A1C23]"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
                 }`}
               >
                 Positions
@@ -76,8 +76,8 @@ export default function Terminal() {
                 onClick={() => setActiveView("orders")}
                 className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   activeView === "orders"
-                    ? "bg-[#3B82F6] text-white"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-[#1A1C23]"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
                 }`}
               >
                 Orders
@@ -93,10 +93,10 @@ export default function Terminal() {
         </div>
 
         {/* Right Sidebar - Market Overview & Limits (desktop only) */}
-        <div className="hidden lg:block w-80 bg-[#13151A] border-l border-[#2C2F36] overflow-y-auto">
+        <div className="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto shadow-sm">
           <div className="p-3">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Market Overview</h3>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Market Overview</h3>
               <div className="flex items-center gap-1.5">
                 <div className={`live-pulse ${isConnected ? '' : 'opacity-30'}`} />
                 <span className="text-[9px] text-gray-500">{isConnected ? 'LIVE' : 'OFFLINE'}</span>
@@ -108,11 +108,11 @@ export default function Terminal() {
                 { name: "BANK NIFTY", value: ltpData["Bank Nifty"]?.price || "47,890.25", change: "+0.18%" },
                 { name: "INDIA VIX", value: ltpData["India VIX"]?.price || "14.25", change: "-2.30%" }
               ].map((idx) => (
-                <div key={idx.name} className="flex justify-between items-center p-2 bg-[#1A1C23] rounded-lg">
-                  <span className="text-sm font-medium text-gray-300">{idx.name}</span>
+                <div key={idx.name} className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-700">{idx.name}</span>
                   <div className="text-right">
-                    <span className="text-sm font-bold text-white">₹{idx.value}</span>
-                    <span className={`text-[10px] ml-2 ${idx.change.startsWith('+') ? 'text-[#00D09C]' : 'text-[#FF4D4D]'}`}>
+                    <span className="text-sm font-bold text-gray-800">₹{idx.value}</span>
+                    <span className={`text-[10px] ml-2 ${idx.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                       {idx.change}
                     </span>
                   </div>
