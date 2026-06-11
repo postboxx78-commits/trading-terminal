@@ -1,80 +1,40 @@
-// client/src/components/LimitsPanel.jsx
 import React from "react";
 
-function LimitsPanel() {
-  const panelStyle = {
-    backgroundColor: 'var(--bg-panel)',
-    backdropFilter: 'var(--backdrop-blur)',
-    WebkitBackdropFilter: 'var(--backdrop-blur)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 'var(--radius-md)',
-    padding: '20px',
-  };
-
-  const titleStyle = {
-    margin: '0 0 16px 0',
-    fontSize: '16px',
-    fontWeight: '700',
-    color: 'var(--text-primary)',
-  };
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '14px',
-  };
-
-  const thStyle = {
-    textAlign: 'left',
-    color: 'var(--text-secondary)', // Muted gray text
-    fontWeight: '500',
-    paddingBottom: '8px',
-    textTransform: 'uppercase',
-    fontSize: '12px',
-  };
-
-  const tdStyle = {
-    padding: '10px 0',
-    color: 'var(--text-primary)',
-    borderTop: '1px solid var(--border-color)',
-  };
-
-  const limitValueStyle = {
-    fontWeight: '700',
-    color: 'var(--color-accent)', // Highlight specific limit in cyan
-  };
-
+export default function LimitsPanel() {
   return (
-    <div style={panelStyle}>
-      <h3 style={titleStyle}>Trading Limits</h3>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Particulars</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style={tdStyle}>Cash Balance</td>
-            <td style={{ ...tdStyle, textAlign: 'right', ...limitValueStyle }}>1,45,230.50</td>
-          </tr>
-          <tr>
-            <td style={tdStyle}>Collateral Value</td>
-            <td style={{ ...tdStyle, textAlign: 'right' }}>0.00</td>
-          </tr>
-          <tr>
-            <td style={tdStyle}>Utilized Margin</td>
-            <td style={{ ...tdStyle, textAlign: 'right', color: 'var(--color-bear)' }}>22,100.00</td>
-          </tr>
-          <tr>
-            <td style={tdStyle}>Available Limit</td>
-            <td style={{ ...tdStyle, textAlign: 'right', ...limitValueStyle, color: 'var(--color-bull)' }}>1,23,130.50</td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100 bg-white">
+        <h3 className="text-sm font-bold text-gray-800 tracking-tight">Trading Limits</h3>
+      </div>
+
+      <div className="p-5">
+        <table className="w-full text-sm">
+          <thead className="text-xs text-gray-400 uppercase font-semibold tracking-wider border-b border-gray-100">
+            <tr>
+              <th className="text-left pb-3">Particulars</th>
+              <th className="text-right pb-3">Amount</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr>
+              <td className="py-3 text-gray-600 font-medium">Cash Balance</td>
+              <td className="py-3 text-right font-bold text-gray-900">1,45,230.50</td>
+            </tr>
+            <tr>
+              <td className="py-3 text-gray-600 font-medium">Collateral Value</td>
+              <td className="py-3 text-right font-medium text-gray-600">0.00</td>
+            </tr>
+            <tr>
+              <td className="py-3 text-gray-600 font-medium">Utilized Margin</td>
+              <td className="py-3 text-right font-bold text-red-500">22,100.00</td>
+            </tr>
+            <tr>
+              <td className="py-3 text-gray-600 font-medium">Available Limit</td>
+              <td className="py-3 text-right font-bold text-[#22c55e] text-lg">1,23,130.50</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-
-export default LimitsPanel;
