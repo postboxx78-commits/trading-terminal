@@ -1,155 +1,123 @@
-import { useState, useEffect } from "react";
+// client/src/components/Watchlist.jsx
+import React, { useState, useEffect } from "react";
+import { Plus, X, Search, TrendingUp, TrendingDown } from "lucide-react";
+import { socket } from "../utils/socket";
 import SymbolSearch from "./SymbolSearch";
-import { Star, TrendingUp, TrendingDown, Minus, Activity, X } from "lucide-react";
 
-export default function Watchlist({ onSelect, onUpdateSymbols, ltpData, onCloseMobile }) {
-  const [list, setList] = useState([]);
+function Watchlist() {
+  const [watchlist, setWatchlist] = useState(["NIFTY", "BANKNIFTY", "RELIANCE", "HDFCBANK"]);
+  const [ltpData, setLtpData] = useState({});
   const [selectedSymbol, setSelectedSymbol] = useState(null);
-  const [favorites, setFavorites] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
-    onUpdateSymbols(list.map(item => item.symbol));
-  }, [list]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('watchlist');
-    if (saved) setList(JSON.parse(saved));
-    const fav = localStorage.getItem('favorites');
-    if (fav) setFavorites(JSON.parse(fav));
+    socket.on("ltp-update", (data) => {
+      setLtpData((prev) => ({ ...prev, [data.symbol]: data }));
+    });
+    return () => socket.off("ltp-update");
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('watchlist', JSON.stringify(list));
-  }, [list]);
-  useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
-
-  const handleSelect = (symbol) => {
-    setSelectedSymbol(symbol);
-    onSelect(symbol);
+  const panelStyle = {
+    backgroundColor: 'var(--bg-panel)',
+    backdropFilter: 'var(--backdrop-blur)',
+    WebkitBackdropFilter: 'var(--backdrop-blur)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-md)',
+    padding: '20px',
+    height: 'calc(100vh - 120px)',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
-  const removeFromWatchlist = (e, symbolToRemove) => {
-    e.stopPropagation();
-    setList(list.filter(item => item.symbol !== symbolToRemove.symbol));
-    if (selectedSymbol?.symbol === symbolToRemove.symbol) {
-      setSelectedSymbol(null);
-      onSelect(null);
-    }
+  const headerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
   };
 
-  const toggleFavorite = (e, symbol) => {
-    e.stopPropagation();
-    setFavorites(prev => prev.includes(symbol.symbol) ? prev.filter(s => s !== symbol.symbol) : [...prev, symbol.symbol]);
+  const titleStyle = {
+    margin: 0,
+    fontSize: '18px',
+    fontWeight: '700',
+    color: 'var(--text-primary)',
   };
 
-  const getPriceChange = (symbol) => {
-    const data = ltpData[symbol];
-    if (!data) return { change: 0, changePercent: 0, isPositive: false, isNegative: false };
-    return {
-      change: parseFloat(data.change) || 0,
-      changePercent: parseFloat(data.perChange) || 0,
-      isPositive: parseFloat(data.change) > 0,
-      isNegative: parseFloat(data.change) < 0
-    };
+  const addButtonStyle = {
+    backgroundColor: 'transparent',
+    border: `1px solid var(--border-color)`,
+    color: 'var(--color-accent)', // Cyan accent
+    borderRadius: '4px',
+    padding: '6px 12px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '13px',
+    fontWeight: '500',
   };
 
-  const isConnected = Object.keys(ltpData).length > 0;
+  const listStyle = {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    overflowY: 'auto',
+    flex: 1,
+  };
+
+  const listItemStyle = (symbol) => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px',
+    borderBottom: `1px solid var(--border-color)`,
+    cursor: 'pointer',
+    backgroundColor: selectedSymbol === symbol ? 'var(--color-accent-dim)' : 'transparent',
+    transition: 'background-color 0.2s',
+  });
+
+  const getPriceChangeColor = (change) => {
+    if (change > 0) return 'var(--color-bull)'; // Lime Green
+    if (change < 0) return 'var(--color-bear)'; // Red
+    return 'var(--text-secondary)';
+  };
 
   return (
-    <div className="h-full flex flex-col bg-[#13151A]">
-      <div className="p-3 border-b border-[#2C2F36]">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Watchlist</h2>
-          <div className="flex items-center gap-2">
-            <div className={`live-pulse ${isConnected ? '' : 'opacity-30'}`} />
-            <span className="text-[8px] text-gray-500">{isConnected ? 'LIVE' : 'OFFLINE'}</span>
-            {onCloseMobile && (
-              <button onClick={onCloseMobile} className="lg:hidden text-gray-400 hover:text-white ml-2">
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
-        <SymbolSearch onSelect={(s) => {
-          if (!list.find(item => item.symbol === s.symbol)) {
-            setList([...list, s]);
-            handleSelect(s);
-          } else {
-            handleSelect(s);
-          }
-        }} />
+    <div style={panelStyle}>
+      <div style={headerStyle}>
+        <h3 style={titleStyle}>MarketWatch</h3>
+        <button style={addButtonStyle} onClick={() => setShowSearch(true)}>
+          <Search size={14} /> Add
+        </button>
       </div>
-      <div className="flex-1 overflow-y-auto">
-        {list.length === 0 ? (
-          <div className="p-6 text-center">
-            <Activity className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-xs text-gray-500">Add symbols to watchlist</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-[#2C2F36]">
-            {list.map((item) => {
-              const isSelected = selectedSymbol?.symbol === item.symbol;
-              const isFavorite = favorites.includes(item.symbol);
-              const ltpItem = ltpData[item.symbol];
-              const price = ltpItem?.price;
-              const { change, changePercent, isPositive, isNegative } = getPriceChange(item.symbol);
-              return (
-                <div
-                  key={item.symbol}
-                  onClick={() => handleSelect(item)}
-                  className={`group relative px-3 py-2 cursor-pointer transition-colors ${
-                    isSelected ? 'bg-[#1E293B] border-l-4 border-[#3B82F6]' : 'border-l-4 border-transparent hover:bg-[#1A1C23]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <button onClick={(e) => toggleFavorite(e, item)} className="focus:outline-none">
-                          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`} />
-                        </button>
-                        <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-200'}`}>{item.symbol}</span>
-                        {ltpItem && (
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D09C] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00D09C]"></span>
-                          </span>
-                        )}
-                      </div>
-                      {item.name && <div className="text-[9px] text-gray-500 truncate ml-5">{item.name}</div>}
-                    </div>
-                    <div className="text-right ml-2">
-                      <div className={`text-sm font-semibold tabular-nums ${isSelected ? 'text-white' : 'text-gray-200'}`}>
-                        {price ? `₹${typeof price === 'number' ? price.toFixed(2) : price}` : '---'}
-                      </div>
-                      {price && (
-                        <div className="flex items-center justify-end gap-1 mt-0.5">
-                          {isPositive ? <TrendingUp className="w-3 h-3 text-[#00D09C]" /> : isNegative ? <TrendingDown className="w-3 h-3 text-[#FF4D4D]" /> : <Minus className="w-3 h-3 text-gray-500" />}
-                          <span className={`text-[9px] font-medium tabular-nums ${isPositive ? 'text-[#00D09C]' : isNegative ? 'text-[#FF4D4D]' : 'text-gray-500'}`}>
-                            {changePercent > 0 ? '+' : ''}{changePercent}%
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-1 ml-5">
-                    <span className="text-[8px] text-gray-500 uppercase">{item.exch || 'NSE'}</span>
-                    <button onClick={(e) => removeFromWatchlist(e, item)} className="opacity-0 group-hover:opacity-100 text-[8px] text-[#FF4D4D] hover:text-[#FF6B6B]">
-                      Remove
-                    </button>
-                  </div>
+
+      {showSearch && <SymbolSearch onClose={() => setShowSearch(false)} />}
+
+      <ul style={listStyle}>
+        {watchlist.map((symbol) => {
+          const data = ltpData[symbol] || {};
+          const change = parseFloat(data.change) || 0;
+          const priceColor = getPriceChangeColor(change);
+
+          return (
+            <li key={symbol} style={listItemStyle(symbol)} onClick={() => setSelectedSymbol(symbol)}>
+              <div>
+                <span style={{ fontWeight: '600', color: selectedSymbol === symbol ? 'var(--color-accent)' : 'var(--text-primary)' }}>{symbol}</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '8px' }}>NSE</span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontWeight: '700', color: priceColor, fontSize: '15px' }}>{data.ltp || "0.00"}</span>
+                <div style={{ fontSize: '12px', color: priceColor, display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                  {change > 0 ? <TrendingUp size={12}/> : change < 0 ? <TrendingDown size={12}/> : null}
+                  {change.toFixed(2)} ({data.percentChange || "0.00"}%)
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-      {list.length > 0 && (
-        <div className="p-2 border-t border-[#2C2F36] text-center">
-          <button onClick={() => setList([])} className="text-[9px] text-gray-500 hover:text-[#FF4D4D]">Clear all</button>
-        </div>
-      )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
+
+export default Watchlist;
