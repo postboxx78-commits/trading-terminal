@@ -1,41 +1,14 @@
 @import "tailwindcss";
 
-:root {
-  /* Backgrounds */
-  --bg-main: #0a0e14;
-  --bg-panel: rgba(22, 27, 34, 0.7);
-  --backdrop-blur: blur(10px);
-
-  /* Borders and Dividers */
-  --border-color: #21262d;
-
-  /* Text */
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-
-  /* Accents (Primary Action/Highlight) */
-  --color-accent: #00e5ff;
-  --color-accent-dim: rgba(0, 229, 255, 0.1);
-
-  /* Trade Colors */
-  --color-bull: #00e676;
-  --color-bear: #ff1744;
-  --color-bull-dim: rgba(0, 230, 118, 0.1);
-  --color-bear-dim: rgba(255, 23, 68, 0.1);
-
-  /* Misc */
-  --radius-md: 8px;
-}
-
 body {
   margin: 0;
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Cleaner font */
+  background-color: #f5f7fa; /* Clean light gray background */
+  color: #1f2937; /* Dark gray text */
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glassy Scrollbar (matches the theme better) */
+/* Subtle, clean scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -46,10 +19,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: #cbd5e1; /* slate-300 */
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: #94a3b8; /* slate-400 */
 }
