@@ -1,73 +1,39 @@
-// client/src/components/Positions.jsx
 import React from "react";
 
-function Positions() {
-  const panelStyle = {
-    backgroundColor: 'var(--bg-panel)',
-    backdropFilter: 'var(--backdrop-blur)',
-    WebkitBackdropFilter: 'var(--backdrop-blur)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 'var(--radius-md)',
-    padding: '20px',
-  };
-
-  const titleStyle = {
-    margin: '0 0 16px 0',
-    fontSize: '16px',
-    fontWeight: '700',
-    color: 'var(--text-primary)',
-  };
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '13px',
-  };
-
-  const thStyle = {
-    textAlign: 'left',
-    color: 'var(--text-secondary)',
-    fontWeight: '500',
-    paddingBottom: '8px',
-    textTransform: 'uppercase',
-    fontSize: '11px',
-  };
-
-  const tdStyle = {
-    padding: '10px 0',
-    color: 'var(--text-primary)',
-    borderTop: '1px solid var(--border-color)',
-  };
-
+export default function Positions() {
   return (
-    <div style={panelStyle}>
-      <h3 style={titleStyle}>Open Positions</h3>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Instrument</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Qty</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>LTP</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>P&L</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style={{...tdStyle, fontWeight: '600'}}>NIFTY 22000 CE</td>
-            <td style={{ ...tdStyle, textAlign: 'right', color: 'var(--color-bull)' }}>50</td>
-            <td style={{ ...tdStyle, textAlign: 'right' }}>130.15</td>
-            <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700', color: 'var(--color-bull)' }}>+232.50</td>
-          </tr>
-          <tr>
-            <td style={{...tdStyle, fontWeight: '600'}}>RELIANCE</td>
-            <td style={{ ...tdStyle, textAlign: 'right', color: 'var(--color-bear)' }}>-100</td>
-            <td style={{ ...tdStyle, textAlign: 'right' }}>2855.00</td>
-            <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700', color: 'var(--color-bear)' }}>-485.00</td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
+        <h3 className="text-sm font-bold text-gray-800 tracking-tight">Open Positions</h3>
+        <span className="text-xs font-medium px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md">2 Active</span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100 font-semibold tracking-wider">
+            <tr>
+              <th className="px-5 py-3">Instrument</th>
+              <th className="px-5 py-3 text-right">Qty</th>
+              <th className="px-5 py-3 text-right">LTP</th>
+              <th className="px-5 py-3 text-right">P&L</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr className="hover:bg-gray-50 transition-colors">
+              <td className="px-5 py-4 font-bold text-gray-900">NIFTY 22000 CE</td>
+              <td className="px-5 py-4 text-right font-medium text-[#22c55e]">50</td>
+              <td className="px-5 py-4 text-right font-medium text-gray-600">130.15</td>
+              <td className="px-5 py-4 text-right font-bold text-[#22c55e]">+232.50</td>
+            </tr>
+            <tr className="hover:bg-gray-50 transition-colors">
+              <td className="px-5 py-4 font-bold text-gray-900">RELIANCE</td>
+              <td className="px-5 py-4 text-right font-medium text-red-500">-100</td>
+              <td className="px-5 py-4 text-right font-medium text-gray-600">2855.00</td>
+              <td className="px-5 py-4 text-right font-bold text-red-500">-485.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-
-export default Positions;
