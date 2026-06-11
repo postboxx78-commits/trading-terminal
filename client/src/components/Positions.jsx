@@ -1,4 +1,4 @@
-// Positions.jsx - Updated with better error handling
+// Positions.jsx - Enhanced UI with better visual hierarchy and real-time updates
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { 
@@ -12,7 +12,8 @@ import {
   Minus,
   DollarSign,
   Clock,
-  Bug
+  Bug,
+  Zap
 } from "lucide-react";
 
 export default function Positions({ ltpData }) {
@@ -25,105 +26,89 @@ export default function Positions({ ltpData }) {
   const [squareOffLoading, setSquareOffLoading] = useState(null);
   const [debugMode, setDebugMode] = useState(false);
 
-const fetchPositions = async () => {
-  setLoading(true);
-  setError(null);
-  setErrorDetails(null);
-  
-  try {
-    console.log("📡 Fetching positions...");
+  const fetchPositions = async () => {
+    setLoading(true);
+    setError(null);
+    setErrorDetails(null);
     
-    const response = await axios.get("http://140.245.234.6:3001/api/positions", {
-      timeout: 10000,
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-    
-    console.log("📥 Positions response:", response.data);
-
-    if (response.data.success) {
-      // Update positions with latest LTP data
-      const updatedPositions = response.data.data.map(pos => {
-        const ltp = ltpData[pos.tradingSymbol]?.price || pos.lastPrice || 0;
-        
-        // Calculate P&L based on position type
-        let pnl = 0;
-        let pnlPercentage = 0;
-        
-        if (pos.positionType === "LONG") {
-          pnl = (ltp - pos.averageBuyPrice) * Math.abs(pos.quantity);
-          pnlPercentage = pos.averageBuyPrice > 0 
-            ? ((ltp - pos.averageBuyPrice) / pos.averageBuyPrice) * 100 
-            : 0;
-        } else if (pos.positionType === "SHORT") {
-          pnl = (pos.averageSellPrice - ltp) * Math.abs(pos.quantity);
-          pnlPercentage = pos.averageSellPrice > 0 
-            ? ((pos.averageSellPrice - ltp) / pos.averageSellPrice) * 100 
-            : 0;
+    try {
+      console.log("📡 Fetching positions...");
+      
+      const response = await axios.get("http://140.245.234.6:3001/api/positions", {
+        timeout: 10000,
+        headers: {
+          'Accept': 'application/json'
         }
-        
-        console.log(`Position ${pos.symbol}:`, {
-          type: pos.positionType,
-          qty: pos.quantity,
-          avgBuy: pos.averageBuyPrice,
-          avgSell: pos.averageSellPrice,
-          ltp,
-          pnl
-        });
-        
-        return {
-          ...pos,
-          lastPrice: ltp,
-          pnl: pnl,
-          pnlPercentage: pnlPercentage
-        };
       });
       
-      console.log(`✅ Loaded ${updatedPositions.length} positions`);
-      setPositions(updatedPositions);
-      setLastUpdated(new Date());
-    } else {
-      console.error("❌ Failed to fetch positions:", response.data);
-      setError(response.data.error || "Failed to fetch positions");
-      setErrorDetails(response.data.details);
-    }
-  } catch (err) {
-    console.error("❌ Failed to fetch positions:", err);
-    
-    // Log the complete error response
-    if (err.response) {
-      console.error("Error response data:", err.response.data);
-      console.error("Error response status:", err.response.status);
-      setError(err.response.data?.error || err.response.data?.message || "Failed to fetch positions");
-      setErrorDetails(err.response.data);
-    } else if (err.request) {
-      console.error("No response received:", err.request);
-      setError("No response from server");
-    } else {
-      console.error("Error setting up request:", err.message);
-      setError(err.message);
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+      console.log("📥 Positions response:", response.data);
 
-  // Fetch positions on mount and set up auto-refresh
+      if (response.data.success) {
+        const updatedPositions = response.data.data.map(pos => {
+          const ltp = ltpData[pos.tradingSymbol]?.price || pos.lastPrice || 0;
+          
+          let pnl = 0;
+          let pnlPercentage = 0;
+          
+          if (pos.positionType === "LONG") {
+            pnl = (ltp - pos.averageBuyPrice) * Math.abs(pos.quantity);
+            pnlPercentage = pos.averageBuyPrice > 0 
+              ? ((ltp - pos.averageBuyPrice) / pos.averageBuyPrice) * 100 
+              : 0;
+          } else if (pos.positionType === "SHORT") {
+            pnl = (pos.averageSellPrice - ltp) * Math.abs(pos.quantity);
+            pnlPercentage = pos.averageSellPrice > 0 
+              ? ((pos.averageSellPrice - ltp) / pos.averageSellPrice) * 100 
+              : 0;
+          }
+          
+          return {
+            ...pos,
+            lastPrice: ltp,
+            pnl: pnl,
+            pnlPercentage: pnlPercentage
+          };
+        });
+        
+        console.log(`✅ Loaded ${updatedPositions.length} positions`);
+        setPositions(updatedPositions);
+        setLastUpdated(new Date());
+      } else {
+        console.error("❌ Failed to fetch positions:", response.data);
+        setError(response.data.error || "Failed to fetch positions");
+        setErrorDetails(response.data.details);
+      }
+    } catch (err) {
+      console.error("❌ Failed to fetch positions:", err);
+      
+      if (err.response) {
+        console.error("Error response data:", err.response.data);
+        console.error("Error response status:", err.response.status);
+        setError(err.response.data?.error || err.response.data?.message || "Failed to fetch positions");
+        setErrorDetails(err.response.data);
+      } else if (err.request) {
+        console.error("No response received:", err.request);
+        setError("No response from server");
+      } else {
+        console.error("Error setting up request:", err.message);
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchPositions();
-
     let interval;
     if (autoRefresh) {
       interval = setInterval(fetchPositions, 10000);
     }
-
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [autoRefresh]);
 
-  // Update positions when LTP data changes
   useEffect(() => {
     if (Object.keys(ltpData).length > 0 && positions.length > 0) {
       setPositions(prevPositions => 
@@ -171,13 +156,13 @@ const fetchPositions = async () => {
 
       if (response.data.success) {
         setPositions(prev => prev.filter(p => p.tradingSymbol !== position.tradingSymbol));
-        alert(`Position squared off successfully! Order ID: ${response.data.orderId}`);
+        alert(`✓ Position squared off successfully! Order ID: ${response.data.orderId}`);
       } else {
-        alert(`Failed to square off: ${response.data.error}`);
+        alert(`✗ Failed to square off: ${response.data.error}`);
       }
     } catch (err) {
       console.error("Square off failed:", err);
-      alert(`Failed to square off: ${err.response?.data?.error || err.message}`);
+      alert(`✗ Failed to square off: ${err.response?.data?.error || err.message}`);
     } finally {
       setSquareOffLoading(null);
     }
@@ -200,7 +185,6 @@ const fetchPositions = async () => {
     return num.toLocaleString('en-IN', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   };
 
-  // Calculate totals
   const totalPnl = positions.reduce((acc, pos) => acc + pos.pnl, 0);
   const totalInvestment = positions.reduce((acc, pos) => {
     if (pos.positionType === "LONG") {
@@ -211,11 +195,11 @@ const fetchPositions = async () => {
 
   if (error) {
     return (
-      <div className="h-full flex flex-col p-4">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+      <div className="h-full flex flex-col p-6">
+        <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-5 mb-4">
           <div className="flex items-center space-x-2 text-red-600 mb-2">
             <AlertCircle className="w-5 h-5" />
-            <span className="text-sm font-medium">Error loading positions</span>
+            <span className="text-sm font-semibold">Error loading positions</span>
           </div>
           <p className="text-xs text-red-500 mb-3">{error}</p>
           
@@ -238,10 +222,10 @@ const fetchPositions = async () => {
           )}
         </div>
         
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           <button
             onClick={fetchPositions}
-            className="px-4 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 flex items-center space-x-1"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs rounded-lg hover:from-blue-700 hover:to-blue-800 flex items-center space-x-1 shadow-sm"
           >
             <RefreshCw className="w-3 h-3" />
             <span>Retry</span>
@@ -262,27 +246,28 @@ const fetchPositions = async () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center space-x-3">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Open Positions
-          </h3>
-          <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+          <div className="flex items-center space-x-2">
+            <Zap className="w-4 h-4 text-blue-500" />
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Open Positions</h3>
+          </div>
+          <span className="text-[10px] bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 px-2 py-0.5 rounded-full font-medium">
             {positions.length} positions
           </span>
         </div>
         <div className="flex items-center space-x-3">
           {totalPnl !== 0 && (
-            <div className={`text-xs font-medium ${totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
+            <div className={`text-xs font-bold ${totalPnl >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center space-x-1`}>
+              {totalPnl >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              <span>{totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}</span>
             </div>
           )}
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`text-[9px] px-2 py-1 rounded ${
+            className={`text-[9px] px-2 py-1 rounded transition-all ${
               autoRefresh 
-                ? 'bg-green-100 text-green-700' 
+                ? 'bg-green-100 text-green-700 font-medium' 
                 : 'bg-gray-100 text-gray-500'
             }`}
           >
@@ -291,7 +276,7 @@ const fetchPositions = async () => {
           <button
             onClick={fetchPositions}
             disabled={loading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 disabled:opacity-50 transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -299,27 +284,29 @@ const fetchPositions = async () => {
         </div>
       </div>
       
-      {/* Positions List */}
       <div className="flex-1 overflow-auto">
         {loading && positions.length === 0 ? (
           <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : positions.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-gray-400">
-            <Minus className="w-8 h-8 mb-2" />
-            <p className="text-xs">No open positions</p>
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+              <Minus className="w-6 h-6" />
+            </div>
+            <p className="text-xs font-medium">No open positions</p>
+            <p className="text-[9px] text-gray-300 mt-1">Place an order to see positions here</p>
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-white text-gray-400 text-[10px] uppercase sticky top-0">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-500 text-[10px] uppercase sticky top-0">
               <tr>
-                <th className="text-left px-4 py-2 font-medium">Symbol</th>
-                <th className="text-right px-4 py-2 font-medium">Qty</th>
-                <th className="text-right px-4 py-2 font-medium">Avg</th>
-                <th className="text-right px-4 py-2 font-medium">LTP</th>
-                <th className="text-right px-4 py-2 font-medium">P&L</th>
-                <th className="text-right px-4 py-2 font-medium"></th>
+                <th className="text-left px-4 py-3 font-semibold">Symbol</th>
+                <th className="text-right px-4 py-3 font-semibold">Qty</th>
+                <th className="text-right px-4 py-3 font-semibold">Avg</th>
+                <th className="text-right px-4 py-3 font-semibold">LTP</th>
+                <th className="text-right px-4 py-3 font-semibold">P&L</th>
+                <th className="text-right px-4 py-3 font-semibold"></th>
               </tr>
             </thead>
             <tbody>
@@ -329,44 +316,42 @@ const fetchPositions = async () => {
                 const pnlClass = pos.pnl >= 0 ? 'text-green-600' : 'text-red-600';
                 
                 return (
-                  <tr key={i} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
+                  <tr key={i} className="border-t border-gray-50 hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-150">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-800">{pos.symbol}</div>
-                      <div className="flex items-center space-x-1 mt-0.5">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${
+                      <div className="font-bold text-gray-800">{pos.symbol}</div>
+                      <div className="flex items-center space-x-1.5 mt-1">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
                           pos.product === 'MIS' ? 'bg-purple-100 text-purple-700' :
                           pos.product === 'CNC' ? 'bg-blue-100 text-blue-700' :
                           'bg-gray-100 text-gray-700'
                         }`}>
                           {pos.product}
                         </span>
-                        <span className="text-[8px] text-gray-400">{pos.exchange}</span>
+                        <span className="text-[8px] text-gray-400 font-mono">{pos.exchange}</span>
                       </div>
                     </td>
-                    <td className={`px-4 py-3 text-right font-medium ${
+                    <td className={`px-4 py-3 text-right font-bold ${
                       pos.quantity > 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {pos.quantity > 0 ? '+' : ''}{pos.quantity}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-600">
+                    <td className="px-4 py-3 text-right text-gray-600 font-medium">
                       {formatCurrency(avgPrice)}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-gray-800">
+                    <td className="px-4 py-3 text-right font-bold text-gray-800">
                       {pos.lastPrice ? formatCurrency(pos.lastPrice) : '--'}
                     </td>
-                    <td className={`px-4 py-3 text-right font-medium ${pnlClass}`}>
+                    <td className={`px-4 py-3 text-right font-bold ${pnlClass}`}>
                       <div className="flex items-center justify-end space-x-1">
                         {pos.pnl >= 0 ? (
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         ) : (
                           <ArrowDownRight className="w-3.5 h-3.5" />
                         )}
-                        <span>
-                          {formatCurrency(Math.abs(pos.pnl))}
-                        </span>
+                        <span>{formatCurrency(Math.abs(pos.pnl))}</span>
                       </div>
                       {pos.pnlPercentage !== 0 && (
-                        <div className={`text-[9px] ${pnlClass}`}>
+                        <div className={`text-[9px] ${pnlClass} font-medium`}>
                           ({pos.pnlPercentage > 0 ? '+' : ''}{formatNumber(pos.pnlPercentage, 1)}%)
                         </div>
                       )}
@@ -376,10 +361,10 @@ const fetchPositions = async () => {
                         <button 
                           onClick={() => squareOffPosition(pos)}
                           disabled={squareOffLoading === pos.tradingSymbol}
-                          className={`text-[9px] px-2 py-1 rounded transition-colors ${
+                          className={`text-[9px] px-2.5 py-1 rounded-lg transition-all font-medium ${
                             squareOffLoading === pos.tradingSymbol
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : 'bg-red-50 text-red-600 hover:bg-red-100 hover:shadow-sm'
                           }`}
                         >
                           {squareOffLoading === pos.tradingSymbol ? (
@@ -401,16 +386,15 @@ const fetchPositions = async () => {
         )}
       </div>
 
-      {/* Footer with Summary */}
       {positions.length > 0 && (
-        <div className="p-3 border-t border-gray-100 bg-gray-50">
+        <div className="p-3 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-500">Total Investment</span>
-            <span className="font-medium text-gray-800">{formatCurrency(totalInvestment)}</span>
+            <span className="text-gray-500 font-medium">Total Investment</span>
+            <span className="font-bold text-gray-800">{formatCurrency(totalInvestment)}</span>
           </div>
           <div className="flex items-center justify-between text-xs mt-1">
-            <span className="text-gray-500">Total P&L</span>
-            <span className={`font-medium ${totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <span className="text-gray-500 font-medium">Total P&L</span>
+            <span className={`font-bold ${totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
             </span>
           </div>

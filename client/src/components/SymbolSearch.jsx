@@ -1,15 +1,17 @@
-// SymbolSearch.jsx
-import { useState, useEffect } from "react";
+// SymbolSearch.jsx - Enhanced with keyboard navigation and better UX
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Search, X, Loader } from "lucide-react";
+import { Search, X, Loader, TrendingUp, TrendingDown } from "lucide-react";
 
 export default function SymbolSearch({ onSelect }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const inputRef = useRef(null);
+  const resultsRef = useRef(null);
 
-  // Debounce search to avoid too many API calls
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.length >= 2) {
@@ -25,6 +27,7 @@ export default function SymbolSearch({ onSelect }) {
   const performSearch = async () => {
     setIsSearching(true);
     setError(null);
+    setSelectedIndex(-1);
     
     try {
       const response = await axios.get(`http://140.245.234.6:3001/search?q=${encodeURIComponent(query)}`);
@@ -42,36 +45,72 @@ export default function SymbolSearch({ onSelect }) {
     onSelect(symbol);
     setQuery("");
     setResults([]);
+    setSelectedIndex(-1);
   };
 
   const clearSearch = () => {
     setQuery("");
     setResults([]);
     setError(null);
+    setSelectedIndex(-1);
+    inputRef.current?.focus();
   };
+
+  const handleKeyDown = (e) => {
+    if (results.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % results.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && results[selectedIndex]) {
+          handleSelect(results[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        clearSearch();
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (selectedIndex >= 0 && resultsRef.current) {
+      const selectedElement = resultsRef.current.children[selectedIndex];
+      selectedElement?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [selectedIndex]);
 
   return (
     <div className="relative">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Search symbols (e.g., RELIANCE, TCS)"
-          className="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {/* Loading Indicator */}
       {isSearching && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4">
           <div className="flex items-center justify-center space-x-2">
@@ -81,32 +120,37 @@ export default function SymbolSearch({ onSelect }) {
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-red-200 rounded-lg shadow-lg p-3">
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
 
-      {/* Search Results */}
       {results.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {results.map((symbol) => (
+        <div 
+          ref={resultsRef}
+          className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
+          {results.map((symbol, idx) => (
             <div
               key={symbol.symbol}
               onClick={() => handleSelect(symbol)}
-              className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              className={`px-4 py-2.5 cursor-pointer transition-all ${
+                idx === selectedIndex 
+                  ? 'bg-gradient-to-r from-blue-50 to-blue-100' 
+                  : 'hover:bg-gray-50'
+              } border-b border-gray-100 last:border-b-0`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-800">{symbol.symbol}</span>
+                <span className="font-bold text-gray-800">{symbol.symbol}</span>
                 {symbol.name && (
                   <span className="text-xs text-gray-500">{symbol.name}</span>
                 )}
               </div>
-              <div className="flex items-center space-x-2 mt-0.5">
-                <span className="text-xs text-gray-400">{symbol.exch || 'NSE'}</span>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="text-[10px] text-gray-400 font-mono">{symbol.exch || 'NSE'}</span>
                 {symbol.lot > 1 && (
-                  <span className="text-xs text-gray-400">Lot: {symbol.lot}</span>
+                  <span className="text-[10px] text-gray-400">Lot: {symbol.lot}</span>
                 )}
               </div>
             </div>
@@ -114,7 +158,6 @@ export default function SymbolSearch({ onSelect }) {
         </div>
       )}
 
-      {/* No Results */}
       {query.length >= 2 && !isSearching && results.length === 0 && !error && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center">
           <p className="text-sm text-gray-500">No symbols found</p>
