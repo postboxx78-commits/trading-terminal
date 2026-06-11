@@ -1,70 +1,55 @@
 @import "tailwindcss";
 
-/* Dark matte theme base */
+:root {
+  /* Backgrounds */
+  --bg-main: #0a0e14;
+  --bg-panel: rgba(22, 27, 34, 0.7);
+  --backdrop-blur: blur(10px);
+
+  /* Borders and Dividers */
+  --border-color: #21262d;
+
+  /* Text */
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+
+  /* Accents (Primary Action/Highlight) */
+  --color-accent: #00e5ff;
+  --color-accent-dim: rgba(0, 229, 255, 0.1);
+
+  /* Trade Colors */
+  --color-bull: #00e676;
+  --color-bear: #ff1744;
+  --color-bull-dim: rgba(0, 230, 118, 0.1);
+  --color-bear-dim: rgba(255, 23, 68, 0.1);
+
+  /* Misc */
+  --radius-md: 8px;
+}
+
 body {
-  background-color: #0E0E12;
   margin: 0;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color: #E5E7EB;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Cleaner font */
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar */
+/* Glassy Scrollbar (matches the theme better) */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #1A1C23;
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #3A3F47;
-  border-radius: 4px;
+  background: var(--border-color);
+  border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #4A4F59;
-}
-
-/* Animations */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.8; }
-  100% { transform: scale(2); opacity: 0; }
-}
-.animate-fade-in { animation: fade-in 0.5s ease-out; }
-.animate-slide-up { animation: slide-up 0.3s ease-out; }
-.animate-slide-down { animation: slide-down 0.3s ease-out; }
-
-/* Live pulse indicator */
-.live-pulse {
-  position: relative;
-  width: 8px;
-  height: 8px;
-}
-.live-pulse::before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #00D09C;
-  border-radius: 50%;
-  animation: pulse-ring 1.5s ease-out infinite;
-}
-.live-pulse::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #00D09C;
-  border-radius: 50%;
+  background: var(--text-secondary);
 }
