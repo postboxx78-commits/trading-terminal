@@ -1,4 +1,3 @@
-// Terminal.jsx - Enhanced layout with better visual hierarchy and responsive design
 import { useState } from "react";
 import Header from "./Header";
 import Watchlist from "./Watchlist";
@@ -12,6 +11,7 @@ export default function Terminal() {
   const [selected, setSelected] = useState(null);
   const [activeView, setActiveView] = useState("positions");
   const [watchlistSymbols, setWatchlistSymbols] = useState([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const { ltpData, isConnected } = useLTP(watchlistSymbols);
 
@@ -24,31 +24,33 @@ export default function Terminal() {
     return ltpData[selected.symbol]?.price || null;
   };
 
-  const marketIndices = [
-    { name: "NIFTY 50", symbol: "Nifty 50", value: ltpData["Nifty 50"]?.price || "22,345.50", change: ltpData["Nifty 50"]?.change || "+0.25%" },
-    { name: "BANK NIFTY", symbol: "Bank Nifty", value: ltpData["Bank Nifty"]?.price || "47,890.25", change: "+0.18%" },
-    { name: "INDIA VIX", symbol: "India VIX", value: ltpData["India VIX"]?.price || "14.25", change: "-2.30%" },
-  ];
-
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header />
+    <div className="h-screen flex flex-col bg-[#0f0f1a]">
+      <Header onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)} />
       
-      {/* Main Trading Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Watchlist */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col shadow-sm z-10">
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+      )}
+
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        {/* Left Sidebar - Watchlist (mobile drawer) */}
+        <div className={`
+          fixed lg:relative z-30 w-80 h-full bg-[#1a1a2e] border-r border-[#2a2a3e] transition-transform duration-300
+          ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
           <Watchlist 
             onSelect={setSelected} 
             onUpdateSymbols={updateWatchlistSymbols}
             ltpData={ltpData}
+            onCloseMobile={() => setMobileMenuOpen(false)}
           />
         </div>
 
         {/* Center Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Order Panel */}
-          <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
+        <div className="flex-1 flex flex-col overflow-hidden p-2 lg:p-3">
+          {/* Compact Order Panel */}
+          <div className="mb-3">
             <OrderPanel 
               selected={selected} 
               onClose={() => setSelected(null)} 
@@ -58,33 +60,30 @@ export default function Terminal() {
           </div>
 
           {/* Bottom Panel - Positions & Orders */}
-          <div className="flex-1 p-4 overflow-hidden">
-            {/* View Toggle with enhanced styling */}
-            <div className="flex space-x-2 mb-4">
+          <div className="flex-1 min-h-0 bg-[#1a1a2e] rounded-xl border border-[#2a2a3e] overflow-hidden">
+            <div className="flex space-x-1 p-2 border-b border-[#2a2a3e] bg-[#16162a]">
               <button
                 onClick={() => setActiveView("positions")}
-                className={`px-5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
                   activeView === "positions"
-                    ? "bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-md"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:shadow-sm"
+                    ? "bg-[#0f3460] text-white"
+                    : "text-gray-400 hover:text-gray-200 hover:bg-[#252540]"
                 }`}
               >
-                📊 Positions
+                Positions
               </button>
               <button
                 onClick={() => setActiveView("orders")}
-                className={`px-5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
                   activeView === "orders"
-                    ? "bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-md"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:shadow-sm"
+                    ? "bg-[#0f3460] text-white"
+                    : "text-gray-400 hover:text-gray-200 hover:bg-[#252540]"
                 }`}
               >
-                📋 Orders
+                Orders
               </button>
             </div>
-
-            {/* Content - Enhanced card design */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-md h-[calc(100%-52px)] overflow-hidden hover:shadow-lg transition-shadow duration-200">
+            <div className="h-[calc(100%-48px)] overflow-auto">
               {activeView === "positions" ? 
                 <Positions ltpData={ltpData} /> : 
                 <Orders />
@@ -93,32 +92,33 @@ export default function Terminal() {
           </div>
         </div>
 
-        {/* Right Sidebar - Market Info & Limits */}
-        <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto shadow-sm">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">MARKET OVERVIEW</h3>
+        {/* Right Sidebar - Market Overview & Limits (hidden on small screens, can be toggled) */}
+        <div className="hidden lg:block w-80 bg-[#1a1a2e] border-l border-[#2a2a3e] overflow-y-auto">
+          <div className="p-3">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Market Overview</h3>
               <div className="flex items-center space-x-1">
-                <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-                <span className="text-[8px] text-gray-400">{isConnected ? 'LIVE' : 'OFFLINE'}</span>
+                <div className={`live-pulse ${isConnected ? '' : 'opacity-30'}`} />
+                <span className="text-[9px] text-gray-500">{isConnected ? 'LIVE' : 'OFFLINE'}</span>
               </div>
             </div>
-            
-            <div className="space-y-3 mb-6">
-              {marketIndices.map((index) => (
-                <div key={index.name} className="group flex justify-between items-center p-3 bg-gradient-to-r from-gray-50 to-gray-50/50 rounded-xl hover:from-gray-100 hover:to-gray-100 transition-all duration-200 cursor-pointer">
-                  <span className="text-sm font-medium text-gray-700">{index.name}</span>
+            <div className="space-y-2 mb-4">
+              {[
+                { name: "NIFTY 50", value: ltpData["Nifty 50"]?.price || "22,345.50", change: "+0.25%" },
+                { name: "BANK NIFTY", value: ltpData["Bank Nifty"]?.price || "47,890.25", change: "+0.18%" },
+                { name: "INDIA VIX", value: ltpData["India VIX"]?.price || "14.25", change: "-2.30%" }
+              ].map((idx) => (
+                <div key={idx.name} className="flex justify-between items-center p-2 bg-[#252540] rounded-lg">
+                  <span className="text-sm font-medium text-gray-300">{idx.name}</span>
                   <div className="text-right">
-                    <span className="text-sm font-bold text-gray-800">₹{index.value}</span>
-                    <span className={`text-[10px] ml-2 ${index.change.startsWith('+') ? 'text-green-600' : index.change.startsWith('-') ? 'text-red-600' : 'text-gray-500'}`}>
-                      {index.change}
+                    <span className="text-sm font-bold text-white">₹{idx.value}</span>
+                    <span className={`text-[10px] ml-2 ${idx.change.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {idx.change}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Limits Panel with improved styling */}
             <LimitsPanel />
           </div>
         </div>

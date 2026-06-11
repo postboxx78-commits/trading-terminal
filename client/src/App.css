@@ -1,49 +1,29 @@
 @import "tailwindcss";
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+/* Dark theme base */
+body {
+  background-color: #0f0f1a;
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+::-webkit-scrollbar-track {
+  background: #1e1e2e;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+::-webkit-scrollbar-thumb {
+  background: #3a3a4e;
+  border-radius: 4px;
 }
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a62;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Add to the bottom of App.css */
-
+/* Animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -54,7 +34,6 @@
     transform: translateY(0);
   }
 }
-
 @keyframes slide-up {
   from {
     opacity: 0;
@@ -65,7 +44,6 @@
     transform: translateY(0);
   }
 }
-
 @keyframes slide-down {
   from {
     opacity: 0;
@@ -76,28 +54,39 @@
     transform: translateY(0);
   }
 }
-
 @keyframes bounce-slow {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
+.animate-fade-in { animation: fade-in 0.5s ease-out; }
+.animate-slide-up { animation: slide-up 0.3s ease-out; }
+.animate-slide-down { animation: slide-down 0.3s ease-out; }
+.animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
 
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+/* Utility for live pulse */
+.live-pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
 }
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
+.live-pulse::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: pulse-ring 1.5s ease-out infinite;
 }
-
-.animate-slide-down {
-  animation: slide-down 0.3s ease-out;
+.live-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #10b981;
+  border-radius: 50%;
 }
-
-.animate-bounce-slow {
-  animation: bounce-slow 2s ease-in-out infinite;
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
 }
