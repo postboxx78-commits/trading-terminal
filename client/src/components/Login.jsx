@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function Login({ onSuccess }) {
-  const [mobile, setMobile] = useState("918086515301");
+  const [mobile, setMobile] = useState("+918086515301");
   const [ucc, setUcc] = useState("X9YOZ");
   const [totp, setTotp] = useState("");
   const [mpin, setMpin] = useState("");
