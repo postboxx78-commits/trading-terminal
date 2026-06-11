@@ -1,29 +1,86 @@
-import { Menu } from "lucide-react";
+// client/src/components/Header.jsx
+import React from "react";
+import { LogOut, UserCircle, Settings } from "lucide-react";
+import { getSession } from "../utils/auth";
+import { socket } from "../utils/socket";
 
-export default function Header({ onMenuClick }) {
+function Header() {
+  const session = getSession();
+
+  const headerStyle = {
+    backgroundColor: 'var(--bg-panel)',
+    backdropFilter: 'var(--backdrop-blur)',
+    WebkitBackdropFilter: 'var(--backdrop-blur)', // For Safari support
+    borderBottom: '1px solid var(--border-color)',
+    padding: '16px 24px',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+
+  const titleStyle = {
+    margin: 0,
+    fontSize: '24px',
+    fontWeight: 700,
+    color: 'var(--color-accent)', // Electric Cyan
+    letterSpacing: '-0.5px',
+  };
+
+  const rightSectionStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+  };
+
+  const socketStatusStyle = {
+    color: socket.connected ? 'var(--color-bull)' : 'var(--color-bear)', // Green/Red
+    fontSize: '12px',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  };
+
+  const userControlStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    color: 'var(--text-secondary)',
+    cursor: 'pointer',
+  };
+
+  const iconStyle = {
+    color: 'var(--color-accent)', // Electric Cyan
+    cursor: 'pointer',
+    opacity: 0.8,
+  };
+
   return (
-    <div className="bg-[#111217] text-white px-3 py-2 flex items-center border-b border-[#2C2F36]">
-      <button
-        onClick={onMenuClick}
-        className="lg:hidden mr-2 text-gray-300 hover:text-white"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
-      <div className="flex items-center gap-2">
-        <div className="w-6 h-6 bg-[#3B82F6] rounded flex items-center justify-center">
-          <span className="text-sm">📈</span>
+    <div style={headerStyle}>
+      <h1 style={titleStyle}>NeoTerminal</h1>
+      
+      <div style={rightSectionStyle}>
+        <span style={socketStatusStyle}>
+          <span style={{ height: '8px', width: '8px', borderRadius: '50%', background: socket.connected ? 'var(--color-bull)' : 'var(--color-bear)' }}></span>
+          {socket.connected ? 'LIVE FEED CONNECTED' : 'LIVE FEED OFFLINE'}
+        </span>
+        
+        <Settings size={20} style={iconStyle} className="hover-scale" />
+
+        <div style={userControlStyle}>
+          <UserCircle size={22} style={iconStyle} />
+          <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>
+            {session.ucc || 'Guest'}
+          </span>
         </div>
-        <h1 className="text-base font-semibold tracking-tight">Trading Terminal</h1>
-      </div>
-      <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 bg-[#00D09C] rounded-full animate-pulse" />
-          <span className="text-[10px] text-gray-300 font-medium">LIVE</span>
-        </div>
-        <div className="w-6 h-6 bg-[#1A1C23] rounded-full flex items-center justify-center">
-          <span className="text-[11px]">👤</span>
-        </div>
+        
+        <LogOut size={20} style={{...iconStyle, color: 'var(--color-bear)'}} className="hover-scale" />
       </div>
     </div>
   );
 }
+
+export default Header;
