@@ -182,7 +182,7 @@ export default function Login({ onSuccess }) {
         </div>
 
         <p className="text-center mt-6 text-xs text-gray-400">
-          © 2024 Trading Terminal. All rights reserved.
+          © 2026 Trading Terminal. All rights reserved.
         </p>
       </div>
     </div>
