@@ -4,7 +4,6 @@ import Watchlist from "./Watchlist";
 import OrderPanel from "./OrderPanel";
 import Positions from "./Positions";
 import Orders from "./Orders";
-import LimitsPanel from "./LimitsPanel";
 import useLTP from "../hooks/useLTP";
 
 export default function Terminal() {
@@ -119,7 +118,6 @@ export default function Terminal() {
                 </div>
               ))}
             </div>
-            <LimitsPanel />
           </div>
         </div>
       </div>
