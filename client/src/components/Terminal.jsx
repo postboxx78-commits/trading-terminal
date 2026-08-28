@@ -48,16 +48,6 @@ export default function Terminal() {
 
         {/* Center Content */}
         <div className="flex-1 flex flex-col overflow-hidden p-2 lg:p-3">
-          {/* Compact Order Panel */}
-          <div className="mb-3">
-            <OrderPanel 
-              selected={selected} 
-              onClose={() => setSelected(null)} 
-              ltpData={ltpData}
-              currentPrice={getSelectedSymbolLTP()}
-            />
-          </div>
-
           {/* Bottom Panel - Positions & Orders */}
           <div className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="flex space-x-1 p-1.5 border-b border-gray-200 bg-gray-50">
@@ -121,6 +111,17 @@ export default function Terminal() {
           </div>
         </div>
       </div>
+    {/* Floating Order Panel */}
+      {selected && (
+        <div className="fixed bottom-6 right-6 lg:right-[340px] z-50 w-72 shadow-2xl rounded-xl transition-all">
+          <OrderPanel 
+            selected={selected} 
+            onClose={() => setSelected(null)} 
+            ltpData={ltpData}
+            currentPrice={getSelectedSymbolLTP()}
+          />
+        </div>
+      )}
     </div>
   );
 }
