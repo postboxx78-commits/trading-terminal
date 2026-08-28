@@ -11,6 +11,7 @@ import { totpLogin, mpinValidate, getSession, tradingHeaders, clearSession } fro
 import { loadSymbols, searchSymbols, getPSymbol, getAllSymbols, getTradingSymbol } from "./symbols.js";
 import { startLTP, stopLTP, isUsingWebSocket } from "./ltp.js";
 import { updateWebSocketSubscriptions } from "./websocket.js";
+import { parseAndAddRule, evaluateAlgoRules, activeRules } from "./algo.js";
 
 const app = express();
 app.use(cors());
@@ -193,6 +194,29 @@ app.get("/api/ltp/:exchange/:symbol", async (req, res) => {
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
+
+// ---------------- ALGO ENDPOINTS ----------------
+app.post("/api/algo/prompt", (req, res) => {
+  try {
+    const { prompt, qty } = req.body;
+    const rule = parseAndAddRule(prompt, qty || 1);
+
+    // Ensure the symbol is actively streaming via WebSocket so the algo can evaluate it
+    if (!activeSubscriptions.has(rule.symbol)) {
+      // Send a dummy subscribe request locally to trigger your existing WebSocket logic
+      io.emit('subscribe', [rule.symbol]); 
+    }
+
+    res.json({ success: true, rule, message: "Algo condition activated" });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get("/api/algo/rules", (req, res) => {
+  res.json({ success: true, data: activeRules });
+});
+
 
 // ---------------- ORDER ENDPOINTS ----------------
 
@@ -1309,5 +1333,10 @@ process.on('SIGTERM', () => {
     });
   });
 });
+
+// Run the algo evaluation loop every 1 second
+setInterval(() => {
+  evaluateAlgoRules().catch(err => console.error("Algo Loop Error:", err));
+}, 1000);
 
 export { io, activeSubscriptions };
