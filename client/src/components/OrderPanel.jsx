@@ -6,7 +6,7 @@ export default function OrderPanel({ selected, onClose, ltpData, currentPrice })
   const [qty, setQty] = useState(1);
   const [price, setPrice] = useState("");
   const [triggerPrice, setTriggerPrice] = useState("");
-  const [orderType, setOrderType] = useState("MARKET");
+  const [orderType, setOrderType] = useState("LIMIT");
   const [side, setSide] = useState("BUY");
   const [productType, setProductType] = useState("MIS");
   const [validity, setValidity] = useState("DAY");
@@ -16,9 +16,7 @@ export default function OrderPanel({ selected, onClose, ltpData, currentPrice })
   const [orderStatus, setOrderStatus] = useState(null);
 
   const orderTypes = [
-    { id: "MARKET", label: "Market", desc: "At market" },
     { id: "LIMIT", label: "Limit", desc: "Specified price" },
-    { id: "SL-M", label: "SL-M", desc: "Stop loss market" },
     { id: "SL", label: "SL", desc: "Stop loss limit" },
   ];
   const productTypes = [

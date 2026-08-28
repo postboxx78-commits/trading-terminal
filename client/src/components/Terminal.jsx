@@ -5,6 +5,7 @@ import OrderPanel from "./OrderPanel";
 import Positions from "./Positions";
 import Orders from "./Orders";
 import useLTP from "../hooks/useLTP";
+import Draggable from "react-draggable";
 
 export default function Terminal() {
   const [selected, setSelected] = useState(null);
@@ -111,19 +112,27 @@ export default function Terminal() {
           </div>
         </div>
       </div>
-    {/* Floating Order Panel */}
+
+      {/* Floating Movable Order Panel */}
       {selected && (
-        <div 
-          className="fixed bottom-6 right-6 lg:right-80 lg:mr-4 z-50 shadow-2xl rounded-xl transition-all"
-          style={{ width: "280px" }}
-        >
-          <OrderPanel 
-            selected={selected} 
-            onClose={() => setSelected(null)} 
-            ltpData={ltpData}
-            currentPrice={getSelectedSymbolLTP()}
-          />
-        </div>
+        <Draggable handle=".drag-handle">
+          <div 
+            className="fixed z-50 shadow-2xl rounded-xl bg-white transition-opacity"
+            style={{ width: "280px", bottom: "24px", right: "350px" }}
+          >
+            {/* Drag Handle Bar */}
+            <div className="drag-handle w-full bg-gray-100 hover:bg-gray-200 cursor-move py-1 flex justify-center items-center rounded-t-xl border-b border-gray-200">
+              <span className="text-[10px] text-gray-400 font-bold tracking-[0.2em]">::::</span>
+            </div>
+            
+            <OrderPanel 
+              selected={selected} 
+              onClose={() => setSelected(null)} 
+              ltpData={ltpData}
+              currentPrice={getSelectedSymbolLTP()}
+            />
+          </div>
+        </Draggable>
       )}
     </div>
   );
