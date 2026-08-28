@@ -113,7 +113,10 @@ export default function Terminal() {
       </div>
     {/* Floating Order Panel */}
       {selected && (
-        <div className="fixed bottom-6 right-6 lg:right-[340px] z-50 w-72 shadow-2xl rounded-xl transition-all">
+        <div 
+          className="fixed bottom-6 right-6 lg:right-80 lg:mr-4 z-50 shadow-2xl rounded-xl transition-all"
+          style={{ width: "280px" }}
+        >
           <OrderPanel 
             selected={selected} 
             onClose={() => setSelected(null)} 
