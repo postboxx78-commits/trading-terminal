@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "./Header";
 import Watchlist from "./Watchlist";
 import OrderPanel from "./OrderPanel";
@@ -12,6 +12,8 @@ export default function Terminal() {
   const [activeView, setActiveView] = useState("positions");
   const [watchlistSymbols, setWatchlistSymbols] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const dragNodeRef = useRef(null);
   
   const { ltpData, isConnected } = useLTP(watchlistSymbols);
 
@@ -115,13 +117,14 @@ export default function Terminal() {
 
       {/* Floating Movable Order Panel */}
       {selected && (
-        <Draggable handle=".drag-handle">
+        <Draggable nodeRef={dragNodeRef} handle=".drag-handle">
           <div 
-            className="fixed z-50 shadow-2xl rounded-xl bg-white transition-opacity"
-            style={{ width: "280px", bottom: "24px", right: "350px" }}
+            ref={dragNodeRef}
+            className="fixed z-50 shadow-2xl rounded-xl bg-white flex flex-col"
+            style={{ width: "280px", top: "25%", left: "65%" }}
           >
             {/* Drag Handle Bar */}
-            <div className="drag-handle w-full bg-gray-100 hover:bg-gray-200 cursor-move py-1 flex justify-center items-center rounded-t-xl border-b border-gray-200">
+            <div className="drag-handle w-full bg-gray-100 hover:bg-gray-200 cursor-move py-1.5 flex justify-center items-center rounded-t-xl border-b border-gray-200 select-none">
               <span className="text-[10px] text-gray-400 font-bold tracking-[0.2em]">::::</span>
             </div>
             
