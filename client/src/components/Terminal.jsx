@@ -5,6 +5,7 @@ import OrderPanel from "./OrderPanel";
 import Positions from "./Positions";
 import Orders from "./Orders";
 import useLTP from "../hooks/useLTP";
+import AlgoPanel from "./AlgoPanel";
 import Draggable from "react-draggable";
 
 export default function Terminal() {
@@ -74,12 +75,20 @@ export default function Terminal() {
               >
                 Orders
               </button>
+              {/* Algo Button */}
+              <button
+                onClick={() => setActiveView("algo")}
+                className={`flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  activeView === "algo" ? "bg-gray-800 text-white shadow-sm" : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                <span className="text-[10px]">⚡</span> Algo
+              </button>
             </div>
             <div className="h-[calc(100%-44px)] overflow-auto">
-              {activeView === "positions" ? 
-                <Positions ltpData={ltpData} /> : 
-                <Orders />
-              }
+              {activeView === "positions" ? <Positions ltpData={ltpData} /> : 
+              activeView === "orders" ? <Orders /> : 
+              <AlgoPanel />}
             </div>
           </div>
         </div>
